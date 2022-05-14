@@ -2,6 +2,8 @@ import { useCallback, useContext, useRef } from "preact/hooks";
 import { QrReader } from "react-qr-reader";
 import { AppContext } from "../app";
 import { decodeRestaurantData, useOnClickOutside } from "../utils";
+import { BrowserQRCodeReader } from '@zxing/browser';
+import { Result } from '@zxing/library';
 
 interface QrReaderPopupProps {
     onClose: () => void;
@@ -21,10 +23,11 @@ export default function QrReaderPopup({ onClose }: QrReaderPopupProps) {
                     constraints={{
                         facingMode: 'environment'
                     }}
-                    onResult={(result: { text: string; }, error: any) => {
+
+                    onResult={(result?: Result | undefined | null, error?: Error | undefined | null, reader?: BrowserQRCodeReader) => {
                     if (!!result)
                     {
-                        let items = decodeRestaurantData(result.text);
+                        let items = decodeRestaurantData(result.getText());
                         setAvailable(items);
                         clearToBePaidForMenuItems();
                         onClose();
