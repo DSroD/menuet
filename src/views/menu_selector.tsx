@@ -54,6 +54,7 @@ function MenuItem({ name, price, onClick, onClickDelete }: MenuItemProps) {
     };
 
     const _onClickDelete = () => {
+        //TODO: Use modal, not base confirm?
         if (!confirm(`Delete ${name}?`)) return;
         onClickDelete(name, price);
     }
