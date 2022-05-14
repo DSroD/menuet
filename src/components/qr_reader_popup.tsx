@@ -28,8 +28,10 @@ export default function QrReaderPopup({ onClose }: QrReaderPopupProps) {
                         if (!!result)
                         {
                             let result_text = result.getText();
-                            if (result_text.startsWith(import.meta.env.VITE_BASE_URL))
-                                result_text = new URLSearchParams(result_text).get("menu") ?? ""
+                            if (result_text.startsWith(import.meta.env.VITE_BASE_URL)) {
+                                let location = new URL(result_text).searchParams
+                                result_text = new URLSearchParams(location).get("menu") ?? ""
+                            }
                             alert(result_text)
                             let items = decodeRestaurantData(result_text);
                             setAvailable(items);
