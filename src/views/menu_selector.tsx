@@ -28,13 +28,15 @@ function ConsumedMenuItem({ name, price, amount, onClickMinus, onClickPlus }: Co
     
     return (
     <div class="flex justify-between items-center m-2">
-        <span>{name}</span>
-        <span class="space-x-1">
-            <button class="py-1 px-2" onClick={_onClickPlus}>+</button>
-            <span>{amount}</span>
-            <button class="py-1 px-2" onClick={_onClickMinus}>-</button>
-        </span>
-        <span>{price}</span>
+            <span>{name}</span>
+            <div class="flex justify-between min-w-[130px] items-baseline space-x-6">
+                <span class="space-x-1">
+                    <button class="py-1 px-2" onClick={_onClickPlus}>+</button>
+                    <span>{amount}</span>
+                    <button class="py-1 px-2" onClick={_onClickMinus}>-</button>
+                </span>
+                <span>{price}</span>
+            </div>
     </div>)
 }
 
@@ -59,8 +61,8 @@ function MenuItem({ name, price, onClick, onClickDelete }: MenuItemProps) {
     return (
     <div class="flex flex-row space-x-2 items-baseline">
         <div class="flex justify-between m-2 border-b border-violet-300 focus-border hover-border grow" onClick={_onClick}>
-            <div>{name}</div>
-            <div>{price}</div>
+            <div class="text-md">{name}</div>
+            <div class="text-md">{price}</div>
         </div>
             <div onClick={_onClickDelete} class="w-6 focus-border hover-border">
                 <FontAwesomeIcon icon={faTrash} />
@@ -172,7 +174,7 @@ export default function MenuSelector() {
                         <h2>Total</h2>
                         <div class="flex flex-col">    
                             <span class="text-lg">{total.toFixed(2)} ({subtotal.toFixed(2)} + {tip_amount.toFixed(2)} {tip_round < 0 ? "-" : "+"} {Math.abs(tip_round).toFixed(2)})</span>
-                            <div class="text-sm"><input type="checkbox" checked={alwaysTipUp} onChange={toggleAlwaysTipUp} /> Always tip up</div>
+                            <div class="text-sm"><input id="tip-checkbox" type="checkbox" checked={alwaysTipUp} onChange={toggleAlwaysTipUp} /> <label for='tip-checkbox'>Always tip up</label></div>
                         </div>
                     </div>
                 </div>
@@ -195,20 +197,20 @@ export default function MenuSelector() {
             </div>
             {/** Tip options */}
             <div>
-                <h2>Tip</h2>
+                <label for="tip-amount"><h2>Tip</h2></label>
                 <div class="flex flex-row space-x-4 items-center">
                     <div>
-                        <input type="number" value={tip} onChange={onChangeTip} />
+                        <input id="tip-amount" type="number" value={tip} onChange={onChangeTip} />
                     </div>
                     <div class="flex flex-col items-start">
-                        <span><input type="radio" name="tip-type" value="percent" checked={tipType === 'percent'} onChange={onChangeTipType} /> %</span>
-                        <span><input type="radio" name="tip-type" value="fixed" checked={tipType === 'fixed'} onChange={onChangeTipType} /> Fixed</span>
+                        <span><input id="tip-type-percent" type="radio" name="tip-type" value="percent" checked={tipType === 'percent'} onChange={onChangeTipType} /> <label for="tip-type-percent">%</label></span>
+                        <span><input id="tip-type-fixed" type="radio" name="tip-type" value="fixed" checked={tipType === 'fixed'} onChange={onChangeTipType} /> <label for="tip-type-fixed">Fixed</label></span>
                     </div>
                 </div>
                 <div>
                     <div class="flex flex-col">
-                        <label class="text-base">Round to nearest:</label>
-                        <input type="number" value={tipNearestRound} onChange={onChangeTipNearestRound} />
+                        <label for="tip-nearest-round" class="text-base">Round to nearest:</label>
+                        <input id="tip-nearest-round" type="number" value={tipNearestRound} onChange={onChangeTipNearestRound} />
                     </div>
                     </div>
             </div>

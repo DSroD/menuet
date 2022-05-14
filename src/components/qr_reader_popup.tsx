@@ -25,13 +25,14 @@ export default function QrReaderPopup({ onClose }: QrReaderPopupProps) {
                     }}
 
                     onResult={(result?: Result | undefined | null, error?: Error | undefined | null, reader?: BrowserQRCodeReader) => {
-                    if (!!result)
-                    {
-                        let items = decodeRestaurantData(result.getText());
-                        setAvailable(items);
-                        clearToBePaidForMenuItems();
-                        onClose();
-                    }
+                        alert(result?.toString())
+                        if (!!result)
+                        {
+                            let items = decodeRestaurantData(result.getText());
+                            setAvailable(items);
+                            clearToBePaidForMenuItems();
+                            onClose();
+                        }
                 }} />
             </div>
         </div>

@@ -23,10 +23,8 @@ export default function LoadMenuModal({ onClose }: LoadMenuModal) {
 
     const onClickSubmit = useCallback(() => {
         const menu = localStorage.getItem(selected);
-        console.log(selected);
         if (menu) {
             const parsed = decodeRestaurantData(menu);
-            console.log(parsed);
             setAvailable(parsed);
             clearToBePaidForMenuItems();
         }
