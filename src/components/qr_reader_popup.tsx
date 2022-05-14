@@ -32,7 +32,6 @@ export default function QrReaderPopup({ onClose }: QrReaderPopupProps) {
                                 let location = new URL(result_text).searchParams
                                 result_text = new URLSearchParams(location).get("menu") ?? ""
                             }
-                            alert(result_text)
                             let items = decodeRestaurantData(result_text);
                             setAvailable(items);
                             clearToBePaidForMenuItems();
