@@ -145,7 +145,7 @@ export function App() {
       setTip,
       setTipType
     } as AppState}>
-      <div>
+      <div class="p-2">
         <h1>Menuet</h1>
         <MenuSelector />
       </div>
