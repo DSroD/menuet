@@ -6,7 +6,7 @@ import preact from '@preact/preset-vite'
 export default defineConfig(({ command, mode }: ConfigEnv) => {
   const base_config = {
     plugins: [preact(), VitePWA({
-      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
         name: 'Menuet',
         short_name: 'Menuet',
