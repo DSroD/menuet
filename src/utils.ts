@@ -1,6 +1,5 @@
 import { MutableRef, useEffect } from "preact/hooks";
-import { urlToHttpOptions } from "url";
-import { BASE_URL, ConsumedMenuItemInfo, MenuItemInfo } from "./app";
+import { BASE_URL, ConsumedMenuItemInfo, MenuItemInfo, TipType } from "./app";
 
 // source: https://usehooks.com/useOnClickOutside/
 export function useOnClickOutside<T extends HTMLElement | null>(ref: MutableRef<T>, handler: (event: MouseEvent | TouchEvent) => void) {
@@ -30,9 +29,9 @@ export function encodeRestaurantData(menuItems: MenuItemInfo[] | null | undefine
 
 export function decodeRestaurantData(data: string) {
     return data.split('~').map(item => {
-        let parts = item.split('|')
+        const parts = item.split('|')
         if (parts.length != 2) return;
-        let price = parseFloat(parts[1]);
+        const price = parseFloat(parts[1]);
         if (isNaN(price)) return;
         if (parts[0].length === 0) return;
         return { name: parts[0], price } as MenuItemInfo;
@@ -46,14 +45,27 @@ export function encodeOrders(menuItems: ConsumedMenuItemInfo[] | null | undefine
 
 export function decodeOrders(data: string) {
     return data.split('~').map(item => {
-        let parts = item.split('|')
-        if (parts.length != 3) return;
-        let price = parseFloat(parts[1]);
-        let amount = parseInt(parts[2]);
+        const parts = item.split('|')
+        if (parts.length !== 3) return;
+        const price = parseFloat(parts[1]);
+        const amount = parseInt(parts[2]);
         if (isNaN(price) || isNaN(amount)) return;
         if (parts[0].length === 0) return;
         return { name: parts[0], price, amount } as ConsumedMenuItemInfo;
     }).filter(notEmpty)
+}
+
+export function encodeTipData(tip: number, round: number, tipType: TipType) {
+    return `${tip}~${round}~${tipType === 'fixed' ? 'f' : 'p'}`;
+}
+
+export function decodeTipData(data: string) {
+    const items = data.split('~');
+    if (items.length !== 3) return;
+    const tip = parseFloat(items[0]);
+    const round = parseFloat(items[1]);
+    if (!(items[2] === 'f' || items[2] === 'p') || isNaN(tip) || isNaN(round)) return;
+    return {tip, round, tipType: (items[2] === 'p' ? 'percent' : 'fixed') as TipType}
 }
 
 function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {

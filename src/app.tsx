@@ -1,6 +1,6 @@
 import { createContext } from "preact";
 import { useCallback, useEffect, useState } from "preact/hooks";
-import { decodeOrders, decodeRestaurantData, encodeOrders, encodeRestaurantData, updateQuery, useQuery } from "./utils";
+import { decodeOrders, decodeRestaurantData, decodeTipData, encodeOrders, encodeRestaurantData, encodeTipData, updateQuery, useQuery } from "./utils";
 import MenuSelector from "./views/menu_selector";
 
 export interface MenuItemInfo {
@@ -29,8 +29,10 @@ type AppState = {
   clearToBePaidForMenuItems: () => void;
   tipType: TipType;
   tip: number;
+  tipNearestRound: number;
   setTip: (tip: number) => void;
   setTipType: (tipType: TipType) => void;
+  setTipNearestRound: (tipRound: number) => void;
 }
 
 export const AppContext = createContext({ } as AppState);
@@ -42,18 +44,26 @@ export const RESERVED_CHARACTERS = ['|', '~'];
 export function App() {
 
   const [tip, _setTip] = useState(10);
-  const [tipType, _setTipType] = useState('percent');
+  const [tipType, _setTipType] = useState<TipType>('percent');
+  const [tipNearestRound, _setTipNearestRound] = useState(1);
 
   const [available, _setAvailable] = useState<MenuItemInfo[] | undefined | null>(undefined);
   const [toBePaidFor, _setToBePaidFor] = useState<ConsumedMenuItemInfo[] | undefined | null>(undefined);
 
   const setTip = useCallback((tip: number) => {
+    localStorage.setItem('~tips', encodeTipData(tip, tipNearestRound, tipType))
     _setTip(tip);
-  }, [_setTip]);
+  }, [_setTip, tipNearestRound, tipType]);
 
   const setTipType = useCallback((tipType: TipType) => {
+    localStorage.setItem('~tips', encodeTipData(tip, tipNearestRound, tipType))
     _setTipType(tipType);
-  }, [_setTipType]);
+  }, [_setTipType, tip, tipNearestRound]);
+
+  const setTipNearestRound = useCallback((tipRound: number) => {
+    localStorage.setItem('~tips', encodeTipData(tip, tipRound, tipType))
+    _setTipNearestRound(tipRound)
+  }, [_setTipNearestRound, tip, tipType])
 
   const setAvailable = useCallback((available: MenuItemInfo[]) => {
     localStorage.setItem("~available", encodeRestaurantData(available));
@@ -129,9 +139,18 @@ export function App() {
     setToBePaidFor([]);
   }, [setToBePaidFor]);
 
-  const query = useQuery()
+  const query = useQuery();
 
   useEffect(() => {
+    const tipData = localStorage.getItem("~tips");
+    if (!!tipData) {
+      const parsedTipData = decodeTipData(tipData);
+      if (!!parsedTipData) {
+        _setTip(parsedTipData.tip);
+        _setTipNearestRound(parsedTipData.round);
+        _setTipType(parsedTipData.tipType);
+      }
+    }
     if (query.has("menu")) {
       const hasItems = !!localStorage.getItem("~available") || !!localStorage.getItem("~orders")
       if (!hasItems || (hasItems && confirm("Delete last session orders?"))) {
@@ -166,8 +185,10 @@ export function App() {
       clearToBePaidForMenuItems,
       tipType,
       tip,
+      tipNearestRound,
       setTip,
-      setTipType
+      setTipType,
+      setTipNearestRound,
     } as AppState}>
       <div class="p-2">
         <h1>Menuet</h1>

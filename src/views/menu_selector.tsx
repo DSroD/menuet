@@ -75,7 +75,7 @@ type Modals = 'addItem' | 'loadMenu' | 'saveMenu' | 'readQR' | 'showQR' | null;
 
 export default function MenuSelector() {
 
-    const { available, toBePaidFor, tipType, tip, addAvailableMenuItem, removeAvailableMenuItem, setTipType, setTip, addOneToToBePaidForMenuItemAmount, removeOneFromToBePayForMenuItemAmount } = useContext(AppContext);
+    const { available, toBePaidFor, tipType, tip, tipNearestRound, addAvailableMenuItem, removeAvailableMenuItem, setTipType, setTip, setTipNearestRound, addOneToToBePaidForMenuItemAmount, removeOneFromToBePayForMenuItemAmount } = useContext(AppContext);
     
     const onClickMenuItem = (name: string, price: number) => {
         addOneToToBePaidForMenuItemAmount(name, price);
@@ -105,7 +105,6 @@ export default function MenuSelector() {
         setTipType(target.value as TipType);
     }, [setTipType]);
 
-    const [tipNearestRound, setTipNearestRound] = useState(1);
     const [alwaysTipUp, setAlwaysTipUp] = useState(true);
 
     const toggleAlwaysTipUp = useCallback(() => {
