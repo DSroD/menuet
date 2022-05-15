@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "preact/hooks";
+import { RESERVED_CHARACTERS } from "../../app";
 import { useOnClickOutside } from "../../utils";
 
 interface AddItemModalProps {
@@ -15,6 +16,13 @@ export default function AddItemModal({ onSubmit, onClose }: AddItemModalProps) {
 
     const onChangeName = useCallback((e: Event) => {
         const target = e.target as HTMLInputElement;
+        for (var char in RESERVED_CHARACTERS) {
+            if (target.value.includes(char))
+            {
+                e.preventDefault();
+                return;
+            }
+        }
         _setName(target.value);
     }, [_setName]);
 
@@ -30,6 +38,7 @@ export default function AddItemModal({ onSubmit, onClose }: AddItemModalProps) {
     }, [_setPrice]);
 
     const onClickSubmit = useCallback(() => {
+        if (!name || !price) return;
         onSubmit(name, price);
         onClose();
     }, [onSubmit, onClose, name, price]);
@@ -48,7 +57,7 @@ export default function AddItemModal({ onSubmit, onClose }: AddItemModalProps) {
                         <input id="price" type="number" value={price} onChange={onChangePrice} />
                     </div>
                 </div>
-                <button onClick={onClickSubmit}>+</button>
+                <button disabled={!name || !price} onClick={onClickSubmit}>+</button>
             </div>
         </div>
     )

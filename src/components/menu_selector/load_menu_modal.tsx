@@ -32,12 +32,14 @@ export default function LoadMenuModal({ onClose }: LoadMenuModal) {
     }, [onClose, setAvailable, selected]);
 
     const onClickDelete = useCallback((name: string) => {
+        if (!confirm(`Delete ${name}?`)) return;
         const newSavedMenus = savedMenus.filter((menu) => menu !== name);
         localStorage.setItem("saved_menus", newSavedMenus.join("|"));
         localStorage.removeItem(name);
-        setSavedMenus(newSavedMenus);
-
-    }, []);
+        setTimeout(() => {
+            setSavedMenus(newSavedMenus);
+        }, 20);
+    }, [savedMenus, setSavedMenus]);
 
 
     return (
@@ -46,7 +48,7 @@ export default function LoadMenuModal({ onClose }: LoadMenuModal) {
                 <h2>Load Menu</h2>
                 <div class="flex flex-col space-y-1 mx-6">
                     {
-                        savedMenus.map(e => <SavedMenu name={e} onClick={setSelected} selected={e === selected} />)
+                        savedMenus.map(e => <SavedMenu name={e} onClick={setSelected} selected={e === selected} onClickDelete={onClickDelete} />)
                     }
                 </div>
                 <button onClick={onClickSubmit}>Load</button>

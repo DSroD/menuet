@@ -28,7 +28,6 @@ export default function SaveMenuModal({ onClose }: SaveMenuModalProps) {
     }, [_setName]);
 
     const onClickSubmit = useCallback(() => {
-        console.log("saving...")
         if (name.length === 0) return;
         if (!savedMenus.includes(name))
             localStorage.setItem('saved_menus', [...savedMenus, name].join("|"));

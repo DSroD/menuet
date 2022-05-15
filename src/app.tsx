@@ -37,6 +37,8 @@ export const AppContext = createContext({ } as AppState);
 
 export const BASE_URL = import.meta.env.VITE_BASE_URL ?? 'http://localhost:3000';
 
+export const RESERVED_CHARACTERS = ['|', '~'];
+
 export function App() {
 
   const [tip, _setTip] = useState(10);
