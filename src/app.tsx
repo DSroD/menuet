@@ -2,6 +2,7 @@ import { createContext } from "preact";
 import { useCallback, useEffect, useState } from "preact/hooks";
 import { decodeOrders, decodeRestaurantData, decodeTipData, encodeOrders, encodeRestaurantData, encodeTipData, updateQuery, useQuery } from "./utils";
 import MenuSelector from "./views/menu_selector";
+import { useRegisterSW } from 'virtual:pwa-register/preact';
 
 export interface MenuItemInfo {
   name: string;
@@ -41,7 +42,17 @@ export const BASE_URL = import.meta.env.VITE_BASE_URL ?? 'http://localhost:3000'
 
 export const RESERVED_CHARACTERS = ['|', '~'];
 
+export const UPDATE_INTERVAL = 8 * 60 * 60 * 1000
+
 export function App() {
+
+  useRegisterSW({
+    onRegistered(r) {
+      r && setInterval(() => {
+        r.update();
+      }, UPDATE_INTERVAL);
+    }
+  });
 
   const [tip, _setTip] = useState(10);
   const [tipType, _setTipType] = useState<TipType>('percent');
