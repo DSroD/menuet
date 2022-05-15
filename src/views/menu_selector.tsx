@@ -7,6 +7,7 @@ import LoadMenuModal from '../components/menu_selector/load_menu_modal';
 import SaveMenuModal from '../components/menu_selector/save_menu_modal';
 import QrReaderPopup from '../components/qr_reader_popup';
 import QrPopup from '../components/qr_popup';
+import { useEffect } from 'react';
 
 interface ConsumedMenuItemProps {
     name: string;
@@ -61,13 +62,13 @@ function MenuItem({ name, price, onClick, onClickDelete }: MenuItemProps) {
 
     return (
     <div class="flex flex-row space-x-2 items-baseline">
-        <div class="flex justify-between m-2 border-b border-violet-300 focus-border hover-border grow" onClick={_onClick}>
+        <button class="flex justify-between mr-2 mb-2 border-b border-violet-300 focus-border hover-border grow" onClick={_onClick}>
             <div class="text-md">{name}</div>
             <div class="text-md">{price}</div>
-        </div>
-            <div onClick={_onClickDelete} class="w-6 focus-border hover-border">
+        </button>
+            <button onClick={_onClickDelete} class="w-8">
                 <FontAwesomeIcon icon={faTrash} />
-            </div>
+            </button>
     </div>)
 }
 
