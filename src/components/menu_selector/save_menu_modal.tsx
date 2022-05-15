@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "preact/hooks";
-import { AppContext } from "../../app";
+import { AppContext, RESERVED_CHARACTERS } from "../../app";
 import { encodeRestaurantData, useOnClickOutside, useQuery } from "../../utils";
 import SavedMenu from "../saved_menu";
 
@@ -19,7 +19,9 @@ export default function SaveMenuModal({ onClose }: SaveMenuModalProps) {
 
     const onChangeName = useCallback((e: Event) => {
         const target = e.target as HTMLInputElement;
-        if (target.value.includes("|")) return;
+        for (let char in RESERVED_CHARACTERS) {
+            if (name.includes(char)) return;
+        }
         _setName(target.value);
     }, [_setName]);
 

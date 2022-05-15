@@ -1,6 +1,6 @@
 import { createContext } from "preact";
 import { useCallback, useEffect, useState } from "preact/hooks";
-import { decodeRestaurantData, useQuery } from "./utils";
+import { decodeOrders, decodeRestaurantData, encodeOrders, encodeRestaurantData, updateQuery, useQuery } from "./utils";
 import MenuSelector from "./views/menu_selector";
 
 export interface MenuItemInfo {
@@ -55,6 +55,16 @@ export function App() {
     _setTipType(tipType);
   }, [_setTipType]);
 
+  const setAvailable = useCallback((available: MenuItemInfo[]) => {
+    localStorage.setItem("~available", encodeRestaurantData(available));
+    _setAvailable(available);
+  }, [_setAvailable]);
+
+  const setToBePaidFor = useCallback((order: ConsumedMenuItemInfo[] | null | undefined) => {
+    localStorage.setItem("~orders", encodeOrders(order));
+    _setToBePaidFor(order);
+  }, [_setToBePaidFor])
+
   const addAvailableMenuItem = useCallback((name: string, price: number) => {
     if (name === '') return;
     if (name.includes('|')) return;
@@ -62,32 +72,28 @@ export function App() {
     if (isNaN(price)) return;
 
     if (!available) {
-      _setAvailable([{ name, price }]);
+      setAvailable([{ name, price }]);
       return;
     }
     if (available.find(x => x.name === name)) {
       return;
     }
-    _setAvailable([...available, { name, price }]);
-  }, [available, _setAvailable]);
-
-  const setAvailable = useCallback((available: MenuItemInfo[]) => {
-    _setAvailable(available);
-  }, [_setAvailable]);
+    setAvailable([...available, { name, price }]);
+  }, [available, setAvailable]);
 
   const removeAvailableMenuItem = useCallback((name: string) => {
     if (!available) return;
-    _setAvailable(available.filter(x => x.name !== name));
-    _setToBePaidFor(toBePaidFor?.filter(x => x.name !== name))
-  }, [available, _setAvailable]);
+    setAvailable(available.filter(x => x.name !== name));
+    setToBePaidFor(toBePaidFor?.filter(x => x.name !== name))
+  }, [available, setAvailable]);
 
   const addToBePaidForMenuItem = useCallback((name: string, price: number) => {
     if (!toBePaidFor) {
-      _setToBePaidFor([{ name, price, amount: 1 }]);
+      setToBePaidFor([{ name, price, amount: 1 }]);
     } else {
-      _setToBePaidFor([...toBePaidFor, { name, price, amount: 1 }]);
+      setToBePaidFor([...toBePaidFor, { name, price, amount: 1 }]);
     }
-  }, [toBePaidFor, _setToBePaidFor]);
+  }, [toBePaidFor, setToBePaidFor]);
 
   const addOneToToBePaidForMenuItemAmount = useCallback((name: string, price: number) => {
 
@@ -98,8 +104,8 @@ export function App() {
     let indexOf = toBePaidForCopy.findIndex(x => x.name === name);
     if (indexOf === -1) toBePaidForCopy.push({ name, price, amount: 1 });
     else toBePaidForCopy[indexOf].amount++;
-    _setToBePaidFor(toBePaidForCopy);
-  }, [toBePaidFor, _setToBePaidFor]);
+    setToBePaidFor(toBePaidForCopy);
+  }, [toBePaidFor, setToBePaidFor]);
 
   const removeOneFromToBePayForMenuItemAmount = useCallback((name: string) => {
     let toBePaidForCopy = [...toBePaidFor ?? []];
@@ -108,26 +114,42 @@ export function App() {
 
     if (toBePaidForCopy[indexOf].amount === 1) toBePaidForCopy.splice(indexOf, 1);
     else toBePaidForCopy[indexOf].amount--;
-    _setToBePaidFor(toBePaidForCopy);
-  }, [toBePaidFor, _setToBePaidFor]);
+    setToBePaidFor(toBePaidForCopy);
+  }, [toBePaidFor, setToBePaidFor]);
 
   const removeToBePaidForMenuItem = useCallback((name: string) => {
     let toBePaidForCopy = [...toBePaidFor ?? []];
     let indexOf = toBePaidForCopy.findIndex(x => x.name === name);
     if (indexOf === -1) return;
     toBePaidForCopy.splice(indexOf, 1);
-    _setToBePaidFor(toBePaidForCopy);
-  }, [toBePaidFor, _setToBePaidFor]);
+    setToBePaidFor(toBePaidForCopy);
+  }, [toBePaidFor, setToBePaidFor]);
 
   const clearToBePaidForMenuItems = useCallback(() => {
-    _setToBePaidFor([]);
-  }, [_setToBePaidFor]);
+    setToBePaidFor([]);
+  }, [setToBePaidFor]);
 
   const query = useQuery()
 
   useEffect(() => {
-    if (!query.has("menu")) return;
-    _setAvailable(decodeRestaurantData(query.get("menu") ?? ""))
+    if (query.has("menu")) {
+      const hasItems = !!localStorage.getItem("~available") || !!localStorage.getItem("~orders")
+      if (!hasItems || (hasItems && confirm("Delete last session orders?"))) {
+        setAvailable(decodeRestaurantData(query.get("menu") ?? ""))
+        updateQuery("");
+        return;
+      }
+    }
+    // Query is empty or session is to be kept - load from storage
+    updateQuery("");
+    const available = localStorage.getItem("~available")
+    if (!available) return;
+    const parsed_available = decodeRestaurantData(available)
+    _setAvailable(parsed_available);
+    const orders = localStorage.getItem("~orders");
+    if (!orders) return;
+    const parsed_orders = decodeOrders(orders);
+    _setToBePaidFor(parsed_orders);
   }, [])
 
   return (

@@ -1,6 +1,6 @@
 import { useCallback, useContext, useRef } from "preact/hooks";
 import { QrReader } from "react-qr-reader";
-import { AppContext } from "../app";
+import { AppContext, BASE_URL } from "../app";
 import { decodeRestaurantData, useOnClickOutside } from "../utils";
 import { BrowserQRCodeReader } from '@zxing/browser';
 import { Result } from '@zxing/library';
@@ -28,7 +28,7 @@ export default function QrReaderPopup({ onClose }: QrReaderPopupProps) {
                         if (!!result)
                         {
                             let result_text = result.getText();
-                            if (result_text.startsWith(import.meta.env.VITE_BASE_URL)) {
+                            if (result_text.startsWith(BASE_URL)) {
                                 let location = new URL(result_text).searchParams
                                 result_text = new URLSearchParams(location).get("menu") ?? ""
                             }

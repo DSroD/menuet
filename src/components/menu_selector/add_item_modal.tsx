@@ -18,10 +18,7 @@ export default function AddItemModal({ onSubmit, onClose }: AddItemModalProps) {
         const target = e.target as HTMLInputElement;
         for (var char in RESERVED_CHARACTERS) {
             if (target.value.includes(char))
-            {
-                e.preventDefault();
                 return;
-            }
         }
         _setName(target.value);
     }, [_setName]);
