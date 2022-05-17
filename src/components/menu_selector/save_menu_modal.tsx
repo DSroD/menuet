@@ -19,7 +19,7 @@ export default function SaveMenuModal({ onClose }: SaveMenuModalProps) {
 
     const onChangeName = useCallback((e: Event) => {
         const target = e.target as HTMLInputElement;
-        for (let char in RESERVED_CHARACTERS) {
+        for (let char of RESERVED_CHARACTERS) {
             if (name.includes(char)) return;
         }
         _setName(target.value);

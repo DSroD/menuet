@@ -16,7 +16,7 @@ export default function AddItemModal({ onSubmit, onClose }: AddItemModalProps) {
 
     const onChangeName = useCallback((e: Event) => {
         const target = e.target as HTMLInputElement;
-        for (var char in RESERVED_CHARACTERS) {
+        for (var char of RESERVED_CHARACTERS) {
             if (target.value.includes(char))
                 return;
         }
